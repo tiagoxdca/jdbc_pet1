@@ -36,6 +36,7 @@ public class PetServiceUT {
         Assert.assertEquals("Andre", response.getOwnerName());
         Assert.assertEquals("Bob2", response.getPetName());
         Assert.assertEquals(0, response.getPetGender());
+        //linha de teste de git
     }
 
     private PetCreateRequest buildRequest(String ownerName,
