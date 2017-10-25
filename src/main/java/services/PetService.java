@@ -36,7 +36,6 @@ public class PetService {
         ResultSet petRS = petDAO.getPetResultSet(request);
         if (petRS.next()) { //expected one
             Pet pet = petDAO.createPetFromFetch(petRS);
-            closeConnections(ownerRS, petRS);
             return pet;
         }
         return null;
@@ -45,7 +44,7 @@ public class PetService {
     private void closeConnections(ResultSet ownerRS, ResultSet petRS) throws SQLException {
         ownerRS.close();
         petRS.close();
-        DB.getConnection().close();
+        DB.getDB().close();
     }
 
 

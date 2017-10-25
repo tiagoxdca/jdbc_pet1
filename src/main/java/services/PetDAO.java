@@ -17,35 +17,39 @@ public class PetDAO {
         Integer petGender = petRS.getInt("gender");
         Integer owner_id = petRS.getInt("fk_owner");
 
+
         //devolver uma instancia Pet
         return Pet.builder().id(id).name(petName).gender(petGender).owner_id(owner_id).build();
     }
 
     public void insertPetIntoDatabase(PetCreateRequest request, int ownerId) throws SQLException {
         //criar pet
+
         String insertPet = "insert into pet(name, gender, fk_owner) values (?, ?, ?)";
 
-        preparedStatement = DB.getConnection().queryPrepared(insertPet);
+        preparedStatement = DB.getDB().queryPrepared(insertPet);
         preparedStatement.setString(1, request.getPetName());
         preparedStatement.setInt(2, request.getPetGender());
         preparedStatement.setInt(3, ownerId);
         preparedStatement.executeUpdate();
-        preparedStatement.close();
-        DB.getConnection().close();
+
     }
 
     public ResultSet getPetResultSet(PetCreateRequest request) throws SQLException {
         String petLookupQuery = "select * from pet where name = ?";
 
-        preparedStatement = DB.getConnection().queryPrepared(petLookupQuery);
+
+        preparedStatement = DB.getDB().queryPrepared(petLookupQuery);
         preparedStatement.setString(1, request.getPetName());
-        return preparedStatement.executeQuery();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return resultSet;
     }
 
     public ResultSet getOwnerResultSet(PetCreateRequest request) throws SQLException {
-        preparedStatement = DB.getConnection().queryPrepared("select id from owner where name = ?");
+        preparedStatement = DB.getDB().queryPrepared("select id from owner where name = ?");
         preparedStatement.setString(1, request.getOwnerName());
-        return preparedStatement.executeQuery();
+        ResultSet resultSet = preparedStatement.executeQuery();
+        return resultSet;
     }
 
     public PetCreateResponse createPetResponse(PetCreateRequest request) throws SQLException {
@@ -53,10 +57,11 @@ public class PetDAO {
 
         String sql = "select p.name as petName, p.gender, ow.name as ownerName, ow.phone from pet as p inner join owner ow" +
                 " on p.fk_owner = ow.id where p.name = ? and ow.name = ?";
-        PreparedStatement preparedStatement = DB.getConnection().queryPrepared(sql);
+        PreparedStatement preparedStatement = DB.getDB().queryPrepared(sql);
         preparedStatement.setString(1,request.getPetName());
         preparedStatement.setString(2,request.getOwnerName());
         ResultSet resultSet = preparedStatement.executeQuery();
+        DB.getDB().getConn().commit();
         while (resultSet.next()){
             String petName = resultSet.getString("petName");
             Integer gender = resultSet.getInt("gender");

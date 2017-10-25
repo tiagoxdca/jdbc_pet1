@@ -16,4 +16,6 @@ public class PetCreateRequest {
     private String petName;
 
     private Integer petGender;
+
+    private  String adress;
 }

@@ -1,10 +1,14 @@
 package services;
 
+import com.github.javafaker.Faker;
+import database.DB;
 import domain.Pet;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.beans.Transient;
 import java.sql.SQLException;
 
 public class PetServiceUT {
@@ -13,19 +17,32 @@ public class PetServiceUT {
     PetDAO petDAO;
 
     @Before
-    public void setUp() {
+    public void setUp() throws SQLException {
+        DB.getDB().getConn().setAutoCommit(false);
         petDAO = new PetDAO();
         petService = new PetService(petDAO);
+
+        String string = new Faker().address().streetAddress().toString();
+
+    }
+
+
+
+    @After
+    public void tearDown() throws SQLException {
+
+        DB.getDB().getConn().rollback();
 
     }
 
     @Test
     public void createPet_validRequest_sucess() throws SQLException {
 
-        Pet savedPt = petService.create(buildRequest("Andre", "Bob2", 0));
+        Pet savedPt = petService.create(buildRequest("Adriano", "Cubito", 1));
+
 
         Assert.assertNotNull(savedPt);
-        Assert.assertEquals("Bob2", savedPt.getName());
+        Assert.assertEquals("Cubito", savedPt.getName());
     }
 
     @Test

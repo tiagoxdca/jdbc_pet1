@@ -11,15 +11,16 @@ public class DB {
     private String USER = "root";
     private String PASS = "q1w2e3r4";
 
-    private Connection conn;
+    public Connection conn;
 
     private static DB instance;
 
     private DB() throws SQLException {
         conn = DriverManager.getConnection(DB_URL,USER,PASS);
+        conn.setAutoCommit(false);
     }
 
-    public static synchronized DB getConnection() throws SQLException {
+    public static synchronized DB getDB() throws SQLException {
          if(instance == null) {
              instance = new DB();
          }
@@ -27,6 +28,9 @@ public class DB {
         return instance;
     }
 
+    public Connection getConn() {
+        return conn;
+    }
 
     public ResultSet query(String query) throws SQLException{
         PreparedStatement statement = instance.conn.prepareStatement(query);
