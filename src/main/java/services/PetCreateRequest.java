@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,8 +16,9 @@ public class PetCreateRequest {
     private String ownerName;
 
     private String petName;
+    private String ownerPhone;
 
     private Integer petGender;
 
-    private  String adress;
+    private List<String> adresses;
 }

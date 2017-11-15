@@ -8,8 +8,8 @@ public class DB {
     private String DB_URL = "jdbc:mysql://localhost/webdb";
 
     //  Database credentials
-    private String USER = "root";
-    private String PASS = "q1w2e3r4";
+    private final String USER = "root";
+    private final String PASS = "q1w2e3r4";
 
     public Connection conn;
 

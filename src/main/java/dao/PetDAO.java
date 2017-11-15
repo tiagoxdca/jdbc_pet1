@@ -1,11 +1,15 @@
-package services;
+package dao;
 
 import database.DB;
 import domain.Pet;
+import services.PetCreateRequest;
+import services.PetCreateResponse;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PetDAO {
 
@@ -45,11 +49,30 @@ public class PetDAO {
         return resultSet;
     }
 
-    public ResultSet getOwnerResultSet(PetCreateRequest request) throws SQLException {
-        preparedStatement = DB.getDB().queryPrepared("select id from owner where name = ?");
-        preparedStatement.setString(1, request.getOwnerName());
+    public List<String> matchPetWithOwner_returnOwnerAdresses(PetCreateRequest request) throws SQLException {
+
+        List<String> adresses = new ArrayList<>();
+
+       String sql =  "insert into pet (name, gender, fk_owner) values (?, ?, ?)";
+        preparedStatement = DB.getDB().getConn().prepareStatement(sql);
+        preparedStatement.setString(1, request.getPetName());
+        preparedStatement.setInt(2, request.getPetGender());
+        preparedStatement.setInt(3,new OwnerDao().getOwnerId(request));
+        preparedStatement.executeUpdate();
+        DB.getDB().getConn().commit();
+
+        new AdressesDAO().insertAdressesIntoDatabase(request);
+
+        sql = "select distinct adress.name as adressName from pet p right join owner as ow on p.fk_owner = ow.id right join adresses adress on adress.fk_owner = ow.id where ow.id = ? order by adress.name asc";
+        preparedStatement = DB.getDB().getConn().prepareStatement(sql);
+        preparedStatement.setInt(1, new OwnerDao().getOwnerId(request));
         ResultSet resultSet = preparedStatement.executeQuery();
-        return resultSet;
+        DB.getDB().getConn().commit();
+        while (resultSet.next()){
+            String nameAdress = resultSet.getString("adressName");
+            adresses.add(nameAdress);
+        }
+        return adresses;
     }
 
     public PetCreateResponse createPetResponse(PetCreateRequest request) throws SQLException {

@@ -2,6 +2,8 @@ package services;
 
 import lombok.*;
 
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -16,4 +18,5 @@ public class PetCreateResponse {
     private String ownerName;
 
     private String ownerPhone;
+    private List<String> listAdresses;
 }

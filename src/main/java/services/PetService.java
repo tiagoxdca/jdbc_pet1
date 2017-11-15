@@ -1,9 +1,12 @@
 package services;
 
+import dao.OwnerDao;
+import dao.PetDAO;
 import database.DB;
 import domain.Pet;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.List;
 
 public class PetService {
     private PetDAO petDAO;
@@ -22,12 +25,7 @@ public class PetService {
 
         //find owner
         int ownerId = 0;
-        ResultSet ownerRS = petDAO.getOwnerResultSet(request);
-
-        //guardar owner id
-        while (ownerRS.next()) { //expected one
-            ownerId = ownerRS.getInt("id"); //guardar id owner
-        }
+        ownerId = new OwnerDao().getOwnerId(request);
 
         //create pet into database
         petDAO.insertPetIntoDatabase(request, ownerId);
@@ -39,6 +37,11 @@ public class PetService {
             return pet;
         }
         return null;
+    }
+
+    public PetCreateResponse createPet_returnOwnerAdresses(PetCreateRequest request) throws SQLException {
+        List<String> adresses = petDAO.matchPetWithOwner_returnOwnerAdresses(request);
+        return new PetCreateResponse().builder().listAdresses(adresses).build();
     }
 
     private void closeConnections(ResultSet ownerRS, ResultSet petRS) throws SQLException {
